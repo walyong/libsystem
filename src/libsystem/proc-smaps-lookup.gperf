@@ -1,0 +1,70 @@
+%{
+#include <assert.h>
+#include "proc.h"
+
+struct smap_mapping {
+        const char* name;
+        enum smap_id id;
+};
+typedef struct smap_mapping smap_mapping;
+
+%}
+smap_mapping;
+%language=ANSI-C
+%define slot-name name
+%define hash-function-name smap_mapping_hash
+%define lookup-function-name smap_mapping_lookup
+%readonly-tables
+%omit-struct-type
+%struct-type
+%includes
+%%
+AnonHugePages,  SMAPS_ID_ANON_HUGE_PAGES
+Anonymous,      SMAPS_ID_ANONYMOUS
+KernelPageSize, SMAPS_ID_KERNEL_PAGE_SIZE
+Locked,         SMAPS_ID_LOCKED
+MMUPageSize,    SMAPS_ID_MMU_PAGE_SIZE
+PSwap,          SMAPS_ID_PSWAP
+Private_Clean,  SMAPS_ID_PRIVATE_CLEAN
+Private_Dirty,  SMAPS_ID_PRIVATE_DIRTY
+Pss,            SMAPS_ID_PSS
+Referenced,     SMAPS_ID_REFERENCED
+Rss,            SMAPS_ID_RSS
+Shared_Clean,   SMAPS_ID_SHARED_CLEAN
+Shared_Dirty,   SMAPS_ID_SHARED_DIRTY
+Size,           SMAPS_ID_SIZE
+Swap,           SMAPS_ID_SWAP
+%%
+static const char* const smaps_string_lookup[SMAPS_ID_MAX] = {
+        [SMAPS_ID_ANON_HUGE_PAGES]      = "AnonHugePages",
+        [SMAPS_ID_ANONYMOUS]            = "Anonymous",
+        [SMAPS_ID_KERNEL_PAGE_SIZE]     = "KernelPageSize",
+        [SMAPS_ID_LOCKED]               = "Locked",
+        [SMAPS_ID_MMU_PAGE_SIZE]        = "MMUPageSize",
+        [SMAPS_ID_PSWAP]                = "PSwap",
+        [SMAPS_ID_PRIVATE_CLEAN]        = "Private_Clean",
+        [SMAPS_ID_PRIVATE_DIRTY]        = "Private_Dirty",
+        [SMAPS_ID_PSS]                  = "Pss",
+        [SMAPS_ID_REFERENCED]           = "Referenced",
+        [SMAPS_ID_RSS]                  = "Rss",
+        [SMAPS_ID_SHARED_CLEAN]         = "Shared_Clean",
+        [SMAPS_ID_SHARED_DIRTY]         = "Shared_Dirty",
+        [SMAPS_ID_SIZE]                 = "Size",
+        [SMAPS_ID_SWAP]                 = "Swap",
+};
+
+const char *smap_id_to_string(enum smap_id id) {
+
+        assert(id >= 0 && id < SMAPS_ID_MAX);
+
+        return smaps_string_lookup[id];
+}
+
+enum smap_id smap_string_to_id(const char *str) {
+        const struct smap_mapping *m;
+
+        assert(str);
+        m = smap_mapping_lookup(str,
+                                strlen(str));
+        return m ? m->id : SMAPS_ID_INVALID;
+}

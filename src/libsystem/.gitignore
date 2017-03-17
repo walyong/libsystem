@@ -1,0 +1,3 @@
+/libsystem.pc
+/proc-meminfo-lookup.c
+/proc-smaps-lookup.c

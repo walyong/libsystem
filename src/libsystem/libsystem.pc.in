@@ -1,0 +1,17 @@
+# Package Information for pkg-config
+#
+# Copyright (c) 2016 Samsung Electronics Co., Ltd.
+# All rights reserved.
+#
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libsystem
+Description: system utility libraries
+Version: @PACKAGE_VERSION@
+Requires.private: @LIBSYSTEM_PC_REQUIRES@
+Cflags: @LIBSYSTEM_PC_CFLAGS@
+Libs: @LIBSYSTEM_PC_LIBS@
