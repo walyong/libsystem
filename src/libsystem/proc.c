@@ -109,6 +109,13 @@ static void smap_free(struct smap *map) {
         free(map);
 }
 
+static inline void smap_freep(struct smap **map) {
+        if (*map)
+                smap_free(*map);
+}
+
+#define _cleanup_smap_free_ _cleanup_ (smap_freep)
+
 void smaps_free(struct smaps *maps) {
         int i;
 
@@ -143,9 +150,9 @@ static int add_smap_to_smaps(struct smaps *maps, struct smap *map) {
 }
 
 int proc_pid_get_smaps(pid_t pid, struct smaps **maps, enum smap_mask mask) {
+        _cleanup_smaps_free_ struct smaps *m = NULL;
         _cleanup_free_ char *path = NULL;
         _cleanup_fclose_ FILE *f = NULL;
-        struct smaps *m = NULL;
         char buf[LINE_MAX];
         bool get_line = true;
         int r;
@@ -169,7 +176,7 @@ int proc_pid_get_smaps(pid_t pid, struct smaps **maps, enum smap_mask mask) {
                 return -ENOMEM;
 
         for (;;) {
-                struct smap *map = NULL;
+                _cleanup_smap_free_ struct smap *map = NULL;
                 int n;
 
                 if (get_line && !fgets(buf, sizeof(buf), f)) {
@@ -192,7 +199,6 @@ int proc_pid_get_smaps(pid_t pid, struct smaps **maps, enum smap_mask mask) {
                 if (n == 3 && !map->name)
                         map->name = strdup("[anon]");
                 else if (n != 4) {
-                        free(map);
                         r = -EINVAL;
                         goto on_error;
                 }
@@ -204,7 +210,6 @@ int proc_pid_get_smaps(pid_t pid, struct smaps **maps, enum smap_mask mask) {
 
                         if (!fgets(buf, sizeof(buf), f)) {
                                 if (ferror(f)) {
-                                        free(map);
                                         r = -errno;
                                         goto on_error;
                                 }
@@ -238,14 +243,16 @@ int proc_pid_get_smaps(pid_t pid, struct smaps **maps, enum smap_mask mask) {
                 r = add_smap_to_smaps(m, map);
                 if (r < 0)
                         goto on_error;
+
+                map = NULL;
         }
 
         *maps = m;
+        m = NULL;
 
         return 0;
 
 on_error:
-        smaps_free(m);
         return r;
 }
 
