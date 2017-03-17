@@ -135,6 +135,15 @@ test_foreach_glist_LDADD = \
 tests += test-foreach-glist
 
 # ------------------------------------------------------------------------------
+test_proc_smaps_SOURCES = \
+	test/test-proc-smaps.c
+
+test_proc_smaps_LDADD = \
+	libsystem.la
+
+tests += test-proc-smaps
+
+# ------------------------------------------------------------------------------
 pkgconfiglib_DATA += \
 	libsystem-sd/libsystem-sd.pc
 
