@@ -40,6 +40,6 @@ elif [ "x$opt" = "xl" ]; then
     make clean > /dev/null
 elif [ "x$opt" = "xs" ]; then
     set -x
-    scan-build ./configure CFLAGS='-std=gnu99 -g -O0 -ftrapv' $args
+    scan-build ./configure CFLAGS='-g -O0 -ftrapv' $args
     scan-build make
 fi
