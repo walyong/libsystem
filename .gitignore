@@ -38,6 +38,9 @@ stamp-*
 *.trs
 /Makefile
 /TAGS
+/GPATH
+/GRTAGS
+/GTAGS
 /debugfiles.list
 /debuglinks.list
 /debugsources.list
