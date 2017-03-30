@@ -730,7 +730,6 @@ DEFINE_READ_WRITE_NUM_DUAL(uint64, "%" SCNu64, "%" PRIu64);
 int write_int_to_file(FILE *f, int num, enum file_write_flags flags) {
 
         assert(f);
-        assert(num);
 
         return write_int32_to_file(f, (int32_t) num, flags);
 }
@@ -738,7 +737,6 @@ int write_int_to_file(FILE *f, int num, enum file_write_flags flags) {
 int write_int_to_path(const char *path, int num, enum file_write_flags flags) {
 
         assert(path);
-        assert(num);
 
         return write_int32_to_path(path, (int32_t) num, flags);
 }
@@ -746,7 +744,6 @@ int write_int_to_path(const char *path, int num, enum file_write_flags flags) {
 int write_unsigned_int_to_file(FILE *f, unsigned int num, enum file_write_flags flags) {
 
         assert(f);
-        assert(num);
 
         return write_uint32_to_file(f, (uint32_t) num, flags);
 }
@@ -754,7 +751,6 @@ int write_unsigned_int_to_file(FILE *f, unsigned int num, enum file_write_flags 
 int write_unsigned_int_to_path(const char *path, unsigned int num, enum file_write_flags flags) {
 
         assert(path);
-        assert(num);
 
         return write_uint32_to_path(path, (uint32_t) num, flags);
 }
@@ -762,7 +758,6 @@ int write_unsigned_int_to_path(const char *path, unsigned int num, enum file_wri
 int write_long_int_to_file(FILE *f, long int num, enum file_write_flags flags) {
 
         assert(f);
-        assert(num);
 
 #if __WORDSIZE == 64
         return write_int64_to_file(f, (int64_t) num, flags);
@@ -774,7 +769,6 @@ int write_long_int_to_file(FILE *f, long int num, enum file_write_flags flags) {
 int write_long_int_to_path(const char *path, long int num, enum file_write_flags flags) {
 
         assert(path);
-        assert(num);
 
 #if __WORDSIZE == 64
         return write_int64_to_path(path, (int64_t) num, flags);
@@ -786,7 +780,6 @@ int write_long_int_to_path(const char *path, long int num, enum file_write_flags
 int write_unsigned_long_int_to_file(FILE *f, unsigned long int num, enum file_write_flags flags) {
 
         assert(f);
-        assert(num);
 
 #if __WORDSIZE == 64
         return write_uint64_to_file(f, (uint64_t) num, flags);
@@ -798,7 +791,6 @@ int write_unsigned_long_int_to_file(FILE *f, unsigned long int num, enum file_wr
 int write_unsigned_long_int_to_path(const char *path, unsigned long int num, enum file_write_flags flags) {
 
         assert(path);
-        assert(num);
 
 #if __WORDSIZE == 64
         return write_uint64_to_path(path, (uint64_t) num, flags);
@@ -810,7 +802,6 @@ int write_unsigned_long_int_to_path(const char *path, unsigned long int num, enu
 int write_long_long_int_to_file(FILE *f, long long int num, enum file_write_flags flags) {
 
         assert(f);
-        assert(num);
 
         return write_int64_to_file(f, (int64_t) num, flags);
 }
@@ -818,7 +809,6 @@ int write_long_long_int_to_file(FILE *f, long long int num, enum file_write_flag
 int write_long_long_int_to_path(const char *path, long long int num, enum file_write_flags flags) {
 
         assert(path);
-        assert(num);
 
         return write_int64_to_path(path, (int64_t) num, flags);
 }
@@ -826,7 +816,6 @@ int write_long_long_int_to_path(const char *path, long long int num, enum file_w
 int write_unsigned_long_long_int_to_file(FILE *f, unsigned long long int num, enum file_write_flags flags) {
 
         assert(f);
-        assert(num);
 
         return write_uint64_to_file(f, (uint64_t) num, flags);
 }
@@ -834,7 +823,6 @@ int write_unsigned_long_long_int_to_file(FILE *f, unsigned long long int num, en
 int write_unsigned_long_long_int_to_path(const char *path, unsigned long long int num, enum file_write_flags flags) {
 
         assert(path);
-        assert(num);
 
         return write_uint64_to_path(path, (uint64_t) num, flags);
 }
