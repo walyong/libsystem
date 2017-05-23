@@ -323,25 +323,19 @@ int config_parse_bytes(
                 const char *rvalue,
                 void *data) {
 
-        size_t *ss = data, s = 0;
-        int r;
+        size_t *ss = data;
 
         assert(filename);
         assert(lvalue);
         assert(rvalue);
         assert(data);
 
+        *ss = 0;
+
         if (isempty(rvalue))
-                s = 0;
-        else {
-                r = parse_bytes(rvalue, &s);
-                if (r < 0)
-                        return r;
-        }
+                return 0;
 
-        *ss = s;
-
-        return 0;
+        return parse_bytes(rvalue, ss);
 }
 
 int config_parse_percent(
