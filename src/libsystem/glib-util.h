@@ -89,6 +89,56 @@ extern "C" {
  */
 int gerror_to_errno(GError *error);
 
+/**
+ * @brief Create msec timeout source and attach it to GMainContext.
+ *
+ * @param context GMainContext to be attached created timeout source.
+ *
+ * @param msec msec interval
+ *
+ * @param func Callback function on timer expired. If this function
+ * return false, the source will be removed. G_SOURCE_CONTINUE and
+ * G_SOURCE_REMOVE are more memorable names for the return value.
+ *
+ * @param context GMainContext to be attached created timeout source.
+ *
+ * @param notify Specifies the type of function which is called when a
+ * data element is destroyed. It is passed the pointer to the data
+ * element and should free any memory and resources allocated for it.
+ *
+ * @return attached sourced id. This id can be destroyed by g_source_destroy().
+ */
+guint g_new_msec_timer(GMainContext *context,
+                       guint msec,
+                       GSourceFunc func,
+                       gpointer data,
+                       GDestroyNotify notify);
+
+/**
+ * @brief Create sec timeout source and attach it to GMainContext.
+ *
+ * @param context GMainContext to be attached created timeout source.
+ *
+ * @param sec sec interval
+ *
+ * @param func Callback function on timer expired. If this function
+ * return false, the source will be removed. G_SOURCE_CONTINUE and
+ * G_SOURCE_REMOVE are more memorable names for the return value.
+ *
+ * @param context GMainContext to be attached created timeout source.
+ *
+ * @param notify Specifies the type of function which is called when a
+ * data element is destroyed. It is passed the pointer to the data
+ * element and should free any memory and resources allocated for it.
+ *
+ * @return attached sourced id. This id can be destroyed by g_source_destroy().
+ */
+guint g_new_sec_timer(GMainContext *context,
+                      guint sec,
+                      GSourceFunc func,
+                      gpointer data,
+                      GDestroyNotify notify);
+
 #ifdef __cplusplus
 }
 #endif

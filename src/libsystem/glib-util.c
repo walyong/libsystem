@@ -54,3 +54,33 @@ int gerror_to_errno(GError *error) {
 
         return gerror_code_table[error->code];
 }
+
+guint g_new_msec_timer(GMainContext *context,
+                       guint msec,
+                       GSourceFunc func,
+                       gpointer data,
+                       GDestroyNotify notify) {
+        g_autoptr(GSource) src = NULL;
+
+        g_assert(func);
+
+        src = g_timeout_source_new(msec);
+        g_source_set_callback(src, func, data, notify);
+
+        return g_source_attach(src, context);
+}
+
+guint g_new_sec_timer(GMainContext *context,
+                      guint sec,
+                      GSourceFunc func,
+                      gpointer data,
+                      GDestroyNotify notify) {
+        g_autoptr(GSource) src = NULL;
+
+        g_assert(func);
+
+        src = g_timeout_source_new_seconds(sec);
+        g_source_set_callback(src, func, data, notify);
+
+        return g_source_attach(src, context);
+}
