@@ -83,7 +83,8 @@ libsystem_la_CFLAGS = \
 	$(GLIB_CFLAGS)
 
 libsystem_la_LIBADD = \
-	-lrt
+	-lrt \
+	$(GLIB_LIBS)
 
 # ------------------------------------------------------------------------------
 test_truncate_nl_SOURCES = \
