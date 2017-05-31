@@ -26,7 +26,9 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <sys/syscall.h>
 #include <sys/time.h>
+#include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
@@ -51,12 +53,9 @@ static int wait_child(pid_t pid, int64_t timeout_msec, int sig) {
                 struct timeval current, delta;
                 pid_t p;
 
-                p = waitpid(pid, &status, WNOHANG);
+                p = waitpid(pid, &status, timeout_msec ? WNOHANG : 0);
                 if (p == pid)
                         break;
-
-                if (timeout_msec == 0)
-                        continue;
 
                 if (gettimeofday(&current, NULL) < 0)
                         return -errno;
@@ -101,6 +100,61 @@ int do_fork_exec_kill_redirect(char *const argv[], char * const envp[], int64_t 
         }
 
         return wait_child(pid, timeout_msec, sig);
+}
+
+#define IOPRIO_CLASS_SHIFT      (13)
+
+static inline int ioprio_set(int which, int who, int ioprio) {
+        return syscall(__NR_ioprio_set, which, who, ioprio);
+}
+
+enum {
+        IOPRIO_WHO_PROCESS = 1,
+        IOPRIO_WHO_PGRP,
+        IOPRIO_WHO_USER,
+};
+
+int fork_exec(struct exec_info *exec) {
+        pid_t pid;
+
+        assert(exec);
+
+        pid = fork();
+        if (pid < 0)
+                return -errno;
+        else if (pid == 0) {
+                int r;
+
+                if (exec->out_fd >= 0)
+                        dup2(exec->out_fd, STDOUT_FILENO);
+
+                if (exec->err_fd >= 0)
+                        dup2(exec->err_fd, STDERR_FILENO);
+
+                if (exec->prio != getpriority(PRIO_PROCESS, 0)) {
+                        r = setpriority(PRIO_PROCESS, 0, exec->prio);
+                        if (r < 0)
+                                _exit(errno);
+                }
+
+                if (exec->ioprio) {
+                        r = ioprio_set(IOPRIO_WHO_PROCESS, 0, exec->ioprio << IOPRIO_CLASS_SHIFT);
+                        if (r < 0)
+                                _exit(errno);
+                }
+
+                if (!exec->envp)
+                        execv(exec->argv[0], exec->argv);
+                else
+                        execvpe(exec->argv[0], exec->argv, exec->envp);
+
+                _exit(EXIT_FAILURE);
+        }
+
+        if (exec->timeout_msec < 0)
+                return pid;
+
+        return wait_child(pid, exec->timeout_msec, exec->kill_signal);
 }
 
 int do_fork_exec_redirect(char *const argv[], char * const envp[], int64_t timeout_msec, int fd, int flags) {

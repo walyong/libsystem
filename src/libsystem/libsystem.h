@@ -38,6 +38,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <dirent.h>
+#include <signal.h>
+#include <sys/resource.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -1305,6 +1307,117 @@ int do_fork_exec_kill(char *const argv[], char * const envp[], int64_t timeout_m
  */
 int do_fork_exec(char *const argv[], char * const envp[], int64_t timeout_msec);
 
+enum {
+        /**
+         * Does not set any I/O priority class.
+         */
+        IOPRIO_CLASS_NONE,
+
+        /**
+         * This is the real-time I/O class. This scheduling class is
+         * given higher priority than any other class: processes from
+         * this class are given first access to the disk every
+         * time. Thus this I/O class needs to be used with some care:
+         * one I/O real-time process can starve the entire
+         * system. Within the real-time class, there are 8 levels of
+         * class data (priority) that determine exactly how much time
+         * this process needs the disk for on each service. The
+         * highest real-time priority level is 0; the lowest is 7. In
+         * the future this might change to be more directly mappable
+         * to performance, by passing in a desired data rate instead.
+         */
+        IOPRIO_CLASS_RT,
+
+        /**
+         * This is the best-effort scheduling class, which is the
+         * default for any process that hasn't set a specific I/O
+         * priority. The class data (priority) determines how much I/O
+         * bandwidth the process will get. Best-effort priority levels
+         * are analogous to CPU nice values (see getpriority(2)). The
+         * priority level determines a priority relative to other
+         * processes in the best-effort scheduling class. Priority
+         * levels range from 0 (highest) to 7 (lowest).
+         */
+        IOPRIO_CLASS_BE,
+
+        /**
+         * This is the idle scheduling class. Processes running at
+         * this level only get I/O time when no-one else needs the
+         * disk. The idle class has no class data. Attention is
+         * required when assigning this priority class to a process,
+         * since it may become starved if higher priority processes
+         * are constantly accessing the disk.
+         */
+        IOPRIO_CLASS_IDLE,
+};
+
+struct exec_info {
+        /**
+         * array of pointers to null-terminated strings that represent
+         * the argument list available to the new program. The first
+         * argument should point to the filename associated with the
+         * file being executed. The array of pointers must be
+         * terminated by a NULL pointer.
+         */
+        char **argv;
+
+        /**
+         * specify the environment of the executed program via the
+         * argument envp. The envp argument is an array of pointers to
+         * null-terminated strings and must be terminated by a NULL
+         * pointer.
+         */
+        char **envp;
+
+        /**
+         * timeout milliseconds. On negative, parent will not wait the
+         * child. On 0, parent will wait the child until exit. On
+         * positive, parent will wait the child until exit during
+         * given milliseconds. If the child is not exited within this
+         * milliseconds, the child will be killed with given
+         * kill_signal.
+         */
+        int64_t timeout_msec;
+
+        /**
+         * signal to kill the child on timeout. Default is SIGTERM.
+         */
+        int kill_signal;
+
+        /**
+         * file descriptor to redirect child standard output.
+         */
+        int out_fd;
+
+        /**
+         * file descriptor to redirect child standard error.
+         */
+        int err_fd;
+
+        /**
+         * process priority of child.
+         */
+        int prio;
+
+        /**
+         * I/O process priority of child.
+         */
+        int ioprio;
+};
+
+/**
+ * Initialize struct exec_info.
+ */
+#define EXEC_INFO_INIT { NULL, NULL, 0, SIGTERM, -1, -1, getpriority(PRIO_PROCESS, 0), IOPRIO_CLASS_NONE }
+
+/**
+ * @brief Traditional fork() and exec() helper.
+ *
+ * @param exec struct exec_info.
+ *
+ * @return If timeout_msec has negative value, pid of child. Others exit code of child.
+ */
+int fork_exec(struct exec_info *exec);
 /**
  * @}
  */
