@@ -39,11 +39,10 @@ static void test_get_pid_smaps(pid_t pid) {
 int main(int argc, char *argv[]) {
 
         if (argc > 1) {
-                pid_t pid = getpid();
                 int i;
 
                 for (i = 1; i < argc; i++) {
-                        pid = (pid_t)atoi(argv[1]);
+                        pid_t pid = (pid_t)atoi(argv[1]);
                         test_get_pid_smaps(pid);
                 }
 
