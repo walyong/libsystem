@@ -81,15 +81,6 @@ extern "C" {
         for (c = g_list_last(l), p = g_list_previous(c); c; c = p, p = g_list_previous(c))
 
 /**
- * @brief Convert GError to errno.
- *
- * @param error GError to convert
- *
- * @return converted errno.
- */
-int gerror_to_errno(GError *error);
-
-/**
  * @brief Create msec timeout source and attach it to GMainContext.
  *
  * @param context GMainContext to be attached created timeout source.
