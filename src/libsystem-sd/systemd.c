@@ -60,7 +60,7 @@ static int systemd_call_sync(GDBusConnection *connection,
                              GVariant **reply,
                              GError **error) {
 
-        GError *err = NULL;
+        GError *err;
         GVariant *gvar;
 
 #if (GLIB_MAJOR_VERSION <= 2 && GLIB_MINOR_VERSION < 36)
@@ -74,7 +74,8 @@ static int systemd_call_sync(GDBusConnection *connection,
         assert(reply);
         assert(error && !*error);
 
-        if (connection)
+        if (connection) {
+                err = NULL;
                 gvar = g_dbus_connection_call_sync(connection,
                                                    name,
                                                    path,
@@ -86,9 +87,10 @@ static int systemd_call_sync(GDBusConnection *connection,
                                                    -1,
                                                    NULL,
                                                    &err);
-        else {
+        } else {
                 g_autoptr(GDBusProxy) proxy = NULL;
 
+                err = NULL;
                 proxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
                                                       G_DBUS_PROXY_FLAGS_NONE,
                                                       NULL, /* GDBusInterfaceInfo */
@@ -100,7 +102,7 @@ static int systemd_call_sync(GDBusConnection *connection,
 
                 if (err) {
                         *error = err;
-                        return -gerror_to_errno(err);
+                        return -err->code;
                 }
 
                 err = NULL;
@@ -115,7 +117,7 @@ static int systemd_call_sync(GDBusConnection *connection,
 
         if (err) {
                 *error = err;
-                return -gerror_to_errno(err);
+                return -err->code;
         }
 
         g_assert(gvar != NULL);
@@ -126,9 +128,10 @@ static int systemd_call_sync(GDBusConnection *connection,
 
 int systemd_subscribe(GDBusConnection *connection, char **err_msg) {
         g_autoptr(GVariant) reply = NULL;
-        g_autoptr(GError) error = NULL;
+        GError *error;
         int r;
 
+        error = NULL;
         r = systemd_call_sync(connection,
                               DBUS_SYSTEMD_BUSNAME,
                               DBUS_SYSTEMD_PATH,
@@ -141,7 +144,7 @@ int systemd_subscribe(GDBusConnection *connection, char **err_msg) {
                 if (err_msg)
                         ERR_MSG_DUP(*err_msg, error->message);
 
-                return -gerror_to_errno(error);
+                g_error_free(error);
         }
 
         return r;
@@ -149,9 +152,10 @@ int systemd_subscribe(GDBusConnection *connection, char **err_msg) {
 
 int systemd_unsubscribe(GDBusConnection *connection, char **err_msg) {
         g_autoptr(GVariant) reply = NULL;
-        g_autoptr(GError) error = NULL;
+        GError *error;
         int r;
 
+        error = NULL;
         r = systemd_call_sync(connection,
                               DBUS_SYSTEMD_BUSNAME,
                               DBUS_SYSTEMD_PATH,
@@ -164,7 +168,7 @@ int systemd_unsubscribe(GDBusConnection *connection, char **err_msg) {
                 if (err_msg)
                         ERR_MSG_DUP(*err_msg, error->message);
 
-                return -gerror_to_errno(error);
+                g_error_free(error);
         }
 
         return r;
@@ -176,13 +180,14 @@ int systemd_get_unit(GDBusConnection *connection,
                      char **err_msg) {
 
         g_autoptr(GVariant) reply = NULL;
-        g_autoptr(GError) error = NULL;
         char *obj = NULL;
+        GError *error;
         int r;
 
         assert(name);
         assert(unit);
 
+        error = NULL;
         r = systemd_call_sync(connection,
                               DBUS_SYSTEMD_BUSNAME,
                               DBUS_SYSTEMD_PATH,
@@ -192,11 +197,13 @@ int systemd_get_unit(GDBusConnection *connection,
                                             name),
                               &reply,
                               &error);
-        if (r < 0) {
+        if (error) {
                 if (err_msg)
                         ERR_MSG_DUP(*err_msg, error->message);
 
-                return -gerror_to_errno(error);
+                g_error_free(error);
+
+                return r;
         }
 
         if (!g_variant_is_of_type(reply, G_VARIANT_TYPE("(o)"))) {
@@ -220,14 +227,15 @@ int systemd_control_unit(GDBusConnection *connection,
                          char **err_msg) {
 
         g_autoptr(GVariant) reply = NULL;
-        g_autoptr(GError) error = NULL;
         char *obj = NULL;
+        GError *error;
         int r;
 
         assert(method);
         assert(name);
         assert(job);
 
+        error = NULL;
         r = systemd_call_sync(connection,
                               DBUS_SYSTEMD_BUSNAME,
                               DBUS_SYSTEMD_PATH,
@@ -238,12 +246,13 @@ int systemd_control_unit(GDBusConnection *connection,
                                             "replace"),
                               &reply,
                               &error);
-        if (r < 0) {
-                *err_msg = strdup(error->message);
-                if (!*err_msg)
-                        return -ENOMEM;
+        if (error) {
+                if (err_msg)
+                        ERR_MSG_DUP(*err_msg, error->message);
 
-                return -gerror_to_errno(error);
+                g_error_free(error);
+
+                return r;
         }
 
         if (!g_variant_is_of_type(reply, G_VARIANT_TYPE("(o)"))) {
@@ -347,7 +356,7 @@ static int systemd_get_property(GDBusConnection *connection,
                                 GVariant **variant,
                                 char **err_msg) {
 
-        g_autoptr(GError) error = NULL;
+        GError *error;
         int r;
 
         assert(name);
@@ -358,6 +367,7 @@ static int systemd_get_property(GDBusConnection *connection,
         assert(property);
         assert(variant);
 
+        error = NULL;
         r = systemd_call_sync(connection,
                               name,
                               path,
@@ -369,11 +379,11 @@ static int systemd_get_property(GDBusConnection *connection,
                               variant,
                               &error);
 
-        if (r < 0) {
+        if (error) {
                 if (err_msg)
                         ERR_MSG_DUP(*err_msg, error->message);
 
-                r = -gerror_to_errno(error);
+                g_error_free(error);
         }
 
         return r;
@@ -729,11 +739,12 @@ on_error:
 
 int systemd_get_units_list(GDBusConnection *conn, GList **unit_list, char **err_msg) {
         g_autoptr(GVariant) reply = NULL;
-        g_autoptr(GError) error = NULL;
+        GError *error;
         int r;
 
         assert(unit_list);
 
+        error = NULL;
         r = systemd_call_sync(conn,
                               DBUS_SYSTEMD_BUSNAME,
                               DBUS_SYSTEMD_PATH,
@@ -742,9 +753,11 @@ int systemd_get_units_list(GDBusConnection *conn, GList **unit_list, char **err_
                               NULL,
                               &reply,
                               &error);
-        if (r < 0) {
+        if (error) {
                 if (err_msg)
                         ERR_MSG_DUP(*err_msg, error->message);
+
+                g_error_free(error);
 
                 return r;
         }
@@ -844,12 +857,13 @@ on_error:
 
 int systemd_get_unit_files_list(GDBusConnection *conn, GList **unit_files_list, char **err_msg) {
         g_autoptr(GVariant) reply = NULL;
-        g_autoptr(GError) error = NULL;
+        GError *error;
         int r;
 
         assert(conn);
         assert(unit_files_list);
 
+        error = NULL;
         r = systemd_call_sync(conn,
                               DBUS_SYSTEMD_BUSNAME,
                               DBUS_SYSTEMD_PATH,
@@ -858,9 +872,11 @@ int systemd_get_unit_files_list(GDBusConnection *conn, GList **unit_files_list, 
                               NULL,
                               &reply,
                               &error);
-        if (r < 0) {
+        if (error) {
                 if (err_msg)
                         ERR_MSG_DUP(*err_msg, error->message);
+
+                g_error_free(error);
 
                 return r;
         }
