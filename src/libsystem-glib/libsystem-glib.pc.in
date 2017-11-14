@@ -1,0 +1,17 @@
+# Package Information for pkg-config
+#
+# Copyright (c) 2017 Samsung Electronics Co., Ltd.
+# All rights reserved.
+#
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libsystem-glib
+Description: Additional glib macro and utility library
+Version: @PACKAGE_VERSION@
+Requires.private: @LIBSYSTEM_GLIB_PC_REQUIRES@
+Cflags: @LIBSYSTEM_GLIB_PC_CFLAGS@
+Libs: @LIBSYSTEM_GLIB_PC_LIBS@

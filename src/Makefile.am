@@ -49,7 +49,6 @@ libsystem_pkginclude_HEADERS =
 libsystem_pkginclude_HEADERS += \
 	libsystem/config-parser.h \
 	libsystem/dbus-util.h \
-	libsystem/glib-util.h \
 	libsystem/libsystem.h \
 	libsystem/proc.h
 
@@ -61,8 +60,6 @@ libsystem_la_SOURCES = \
 	libsystem/config-parser.h \
 	libsystem/dbus-util.h\
 	libsystem/exec.c \
-	libsystem/glib-util.c \
-	libsystem/glib-util.h \
 	libsystem/libsystem.c \
 	libsystem/libsystem.h \
 	libsystem/proc.c \
@@ -79,12 +76,10 @@ CLEANFILES += \
 	libsystem/proc-smaps-lookup.c
 
 libsystem_la_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(GLIB_CFLAGS)
+	$(AM_CFLAGS)
 
 libsystem_la_LIBADD = \
-	-lrt \
-	$(GLIB_LIBS)
+	-lrt
 
 # ------------------------------------------------------------------------------
 test_truncate_nl_SOURCES = \
@@ -121,19 +116,6 @@ test_read_write_LDADD = \
 	libsystem.la
 
 tests += test-read-write
-
-# ------------------------------------------------------------------------------
-test_foreach_glist_SOURCES = \
-	test/test-foreach-glist.c
-
-test_foreach_glist_CFLAGS = \
-	$(GIO_CFLAGS)
-
-test_foreach_glist_LDADD = \
-	$(GIO_LIBS) \
-	libsystem.la
-
-tests += test-foreach-glist
 
 # ------------------------------------------------------------------------------
 test_proc_smaps_SOURCES = \
@@ -180,6 +162,50 @@ libsystem_sd_la_LIBADD = \
 	libsystem.la
 
 # ------------------------------------------------------------------------------
+pkgconfiglib_DATA += \
+	libsystem-glib/libsystem-glib.pc
+
+EXTRA_DIST += \
+	libsystem-glib/libsystem-glib.pc.in
+
+CLEANFILES += \
+	libsystem-glib/libsystem-glib.pc
+
+libsystem_glib_pkgincludedir=$(includedir)/libsystem-glib
+libsystem_glib_pkginclude_HEADERS =
+
+libsystem_glib_pkginclude_HEADERS += \
+	libsystem-glib/libsystem-glib.h
+
+lib_LTLIBRARIES += \
+	libsystem-glib.la
+
+libsystem_glib_la_SOURCES = \
+	libsystem-glib/libsystem-glib.c
+
+libsystem_glib_la_CFLAGS = \
+	$(AM_CFLAGS) \
+	$(GLIB_CFLAGS)
+
+libsystem_glib_la_LIBADD = \
+	-lrt \
+	$(GLIB_LIBS) \
+	libsystem.la
+
+# ------------------------------------------------------------------------------
+test_foreach_glist_SOURCES = \
+	test/test-foreach-glist.c
+
+test_foreach_glist_CFLAGS = \
+	$(GLIB_CFLAGS)
+
+test_foreach_glist_LDADD = \
+	$(GLIB_LIBS) \
+	libsystem.la
+
+tests += test-foreach-glist
+
+# ------------------------------------------------------------------------------
 substitutions = \
        '|PACKAGE_VERSION=$(PACKAGE_VERSION)|' \
        '|PACKAGE_NAME=$(PACKAGE_NAME)|' \
@@ -190,6 +216,9 @@ substitutions = \
        '|LIBSYSTEM_SD_PC_REQUIRES=$(LIBSYSTEM_SD_PC_REQUIRES)|' \
        '|LIBSYSTEM_SD_PC_CFLAGS=$(LIBSYSTEM_SD_PC_CFLAGS)|' \
        '|LIBSYSTEM_SD_PC_LIBS=$(LIBSYSTEM_SD_PC_LIBS)|' \
+       '|LIBSYSTEM_GLIB_PC_REQUIRES=$(LIBSYSTEM_GLIB_PC_REQUIRES)|' \
+       '|LIBSYSTEM_GLIB_PC_CFLAGS=$(LIBSYSTEM_GLIB_PC_CFLAGS)|' \
+       '|LIBSYSTEM_GLIB_PC_LIBS=$(LIBSYSTEM_GLIB_PC_LIBS)|' \
        '|includedir=$(includedir)|' \
        '|VERSION=$(VERSION)|'
 

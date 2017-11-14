@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([libsystem], [4.1], [walyong.cho@samsung.com])
+AC_INIT([libsystem], [4.2], [walyong.cho@samsung.com])
 
 dnl AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_MACRO_DIR([m4])
@@ -101,6 +101,15 @@ AC_SUBST([LIBSYSTEM_SD_PC_LIBS], "${LIBSYSTEM_SD_PC_LIBS} ${DBUS_LIBS}")
 AC_SUBST([LIBSYSTEM_SD_PC_REQUIRES], "${LIBSYSTEM_SD_PC_REQUIRES} ${GIO_REQUIRES}")
 AC_SUBST([LIBSYSTEM_SD_PC_CFLAGS], "${LIBSYSTEM_SD_PC_CFLAGS} ${GIO_CFLAGS}")
 AC_SUBST([LIBSYSTEM_SD_PC_LIBS], "${LIBSYSTEM_SD_PC_LIBS} ${GIO_LIBS}")
+
+# ------------------------------------------------------------------------------
+AC_SUBST([LIBSYSTEM_GLIB_PC_REQUIRES], "libsystem")
+AC_SUBST([LIBSYSTEM_GLIB_PC_CFLAGS], "")
+AC_SUBST([LIBSYSTEM_GLIB_PC_LIBS], "-L${libdir} -lsystem-glib")
+
+AC_SUBST([LIBSYSTEM_GLIB_PC_REQUIRES], "${LIBSYSTEM_GLIB_PC_REQUIRES} ${GLIB_REQUIRES}")
+AC_SUBST([LIBSYSTEM_GLIB_PC_CFLAGS], "${LIBSYSTEM_GLIB_PC_CFLAGS} ${GLIB_CFLAGS}")
+AC_SUBST([LIBSYSTEM_GLIB_PC_LIBS], "${LIBSYSTEM_GLIB_PC_LIBS} ${GLIB_LIBS}")
 
 # ------------------------------------------------------------------------------
 AC_CONFIG_FILES([Makefile

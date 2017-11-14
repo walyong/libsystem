@@ -24,8 +24,8 @@
 #include <errno.h>
 
 #include "libsystem/libsystem.h"
-#include "libsystem/glib-util.h"
 #include "libsystem-sd/systemd.h"
+#include "libsystem-glib/libsystem-glib.h"
 
 #define DBUS_INTERFACE_DBUS_PROPERTIES          DBUS_SERVICE_DBUS ".Properties"
 #define DBUS_INTERFACE_DBUS_PEER                DBUS_SERVICE_DBUS ".Peer"

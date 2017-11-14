@@ -1,7 +1,7 @@
 /*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
 
 /*
- * libsystem
+ * libsystem-glib
  *
  * Copyright (c) 2015 Samsung Electronics Co., Ltd.
  *
@@ -19,7 +19,7 @@
  */
 
 /**
- * @file glib-util.h
+ * @file glib.h
  *
  * GLib utility library
  *

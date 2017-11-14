@@ -25,7 +25,7 @@
 #include <glib.h>
 
 #include "libsystem/libsystem.h"
-#include "libsystem/glib-util.h"
+#include "libsystem-glib/libsystem-glib.h"
 
 static void gen_test_list(GList **list) {
         GList *l = NULL;
