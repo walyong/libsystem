@@ -365,3 +365,38 @@ int config_parse_percent(
 
         return 0;
 }
+
+int config_parse_strv(const char *filename,
+                unsigned line,
+                const char *section,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data)
+{
+        char ***strv = data;
+        char **o = NULL, **v = NULL, **vv = NULL;
+        int r;
+
+        assert(filename);
+        assert(lvalue);
+        assert(rvalue);
+        assert(data);
+
+        if (isempty(rvalue))
+                return 0;
+
+        r = str_to_strv(rvalue, &v, WHITESPACE);
+        if (r < 0)
+                return r;
+
+        o = *strv;
+
+        r = strv_attach(o, v, &vv, true);
+        if (r < 0)
+                return r;
+
+        *strv = vv;
+
+        return 0;
+}
