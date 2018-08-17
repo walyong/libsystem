@@ -202,6 +202,21 @@ int config_parse_percent(const char *filename, unsigned line, const char *sectio
  */
 int config_parse_strv(const char *filename, unsigned line, const char *section, const char *lvalue, int ltype, const char *rvalue, void *data);
 
+/**
+ * @brief A common float type rvalue parser.
+ *
+ * @param filename a parsing config file name
+ * @param line a parsing config file line
+ * @param section a parsing config file section
+ * @param lvalue a parsing config file left value
+ * @param ltype a parsing config file left value type. (not used.)
+ * @param rvalue a parsing config file rvalue
+ * @param data user data
+ *
+ * @return 0 on success, -errno on failure.
+ */
+int config_parse_float(const char *filename, unsigned line, const char *section, const char *lvalue, int ltype, const char *rvalue, void *data);
+
 #ifdef __cplusplus
 }
 #endif
