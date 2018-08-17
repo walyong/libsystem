@@ -1102,3 +1102,13 @@ bool mnt_is_mounted(const char *fsname, const char *dir, const char *type, const
 
         return matched;
 }
+
+bool is_float(const char *s) {
+        char *endptr;
+
+        strtof(s, &endptr);
+        if ((*endptr == '\0') || (isspace(*endptr) != 0))
+                return true;
+
+        return false;
+}

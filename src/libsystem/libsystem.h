@@ -1533,6 +1533,15 @@ int timestr_to_sec(const char *format, const char *time, time_t *sec);
 void msec_to_timeval(uint64_t msec, struct timeval *tv);
 
 /**
+ * @brief Check string is float.
+ *
+ * @param s String to check.
+ *
+ * @return TRUE on all the characters are digit. FALSE on the others.
+ */
+bool is_float(const char *s);
+
+/**
  * @}
  */
 
