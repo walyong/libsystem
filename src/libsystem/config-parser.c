@@ -367,13 +367,13 @@ int config_parse_percent(
 }
 
 int config_parse_strv(const char *filename,
-                unsigned line,
-                const char *section,
-                const char *lvalue,
-                int ltype,
-                const char *rvalue,
-                void *data)
-{
+                      unsigned line,
+                      const char *section,
+                      const char *lvalue,
+                      int ltype,
+                      const char *rvalue,
+                      void *data) {
+
         char ***strv = data;
         char **o = NULL, **v = NULL, **vv = NULL;
         int r;
