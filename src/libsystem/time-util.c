@@ -85,3 +85,27 @@ void msec_to_timeval(uint64_t msec, struct timeval *tv) {
         tv->tv_sec = msec / MSEC_PER_SEC;
         tv->tv_usec = (msec % MSEC_PER_SEC) * USEC_PER_MSEC;
 }
+
+int parse_time(const char *time_string, struct tm *time) {
+
+        struct tm _time;
+        int n;
+
+        assert(time_string);
+        assert(time);
+
+        n = sscanf(time_string,
+                   "%d-%d-%d %d:%d:%d",
+                   &_time.tm_year,
+                   &_time.tm_mon,
+                   &_time.tm_mday,
+                   &_time.tm_hour,
+                   &_time.tm_min,
+                   &_time.tm_sec);
+        if (n != 6)
+                return -EINVAL;
+
+        memcpy(time, &_time, sizeof(struct tm));
+
+        return 0;
+}

@@ -39,6 +39,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <signal.h>
+#include <time.h>
 #include <sys/resource.h>
 
 #ifdef __cplusplus
@@ -204,6 +205,17 @@ int parse_bytes(const char *b, size_t *s) _pure_;
  * @return 0 on success, -errno on failure.
  */
 int parse_percent(const char *string, size_t *percent) _pure_;
+
+/**
+ * @brief Parse "YYYY-MM-DD hh:mm:ss" formatted time string to struct
+ * tm.
+ *
+ * @param time_string "YYYY-MM-DD hh:mm:ss" formatted string
+ * @param time parsed struct tm.
+ *
+ * @return 0 on success, -errno on failure.
+ */
+int parse_time(const char *time_string, struct tm *time) _pure_;
 
 /**
  * @brief check the path string is started with '/'

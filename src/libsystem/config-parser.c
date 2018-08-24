@@ -423,3 +423,23 @@ int config_parse_float(const char *filename,
 
         return 0;
 }
+
+int config_parse_time(
+                const char *filename,
+                unsigned line,
+                const char *section,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data) {
+
+        struct tm *time = data;
+        int r;
+
+        assert(filename);
+        assert(lvalue);
+        assert(rvalue);
+        assert(data);
+
+        return parse_time(rvalue, time);
+}
